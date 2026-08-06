@@ -6,7 +6,7 @@
 ;; この一覧と一致していなければならない。
 ;;
 ;; 2 系統あるのは方針ではなく事実 — 人が書く経路と生成する経路は
-;; 別々に landed していて、出せる納品物が違う（sakkyokuka.work/producible-kinds）。
+;; 別々に landed していて、出せる納品物が違う（ongaku.work/producible-kinds）。
 
 {:craft/authored
  [{:repo "kotoba-lang/kami-ongaku-notation"

@@ -1,20 +1,28 @@
 # sakkyokuka (作曲家)
 
-**受注して作り、権利を定めて渡す商売の層。** 依頼1件を「作品 + 納品物 +
-譲渡する権利 + 対価」として束ね、その約束が守れるかを受注前に構造的に
-検査する。
+**受注して作り、権利を定めて渡す商売の層。** この studio がどの作品を持ち、
+それぞれについて何の権利を実際に保有し、既にどこへ何を渡してあるかを台帳で
+持ち、そこに受注を突き合わせる。
 
 ADR-2607023000 が creative `-ka` ごとに定める 3 層のうち、3 番目:
 
 | layer | where | what it holds |
 |---|---|---|
-| 技芸 craft | [`kami-ongaku-notation`](https://github.com/kotoba-lang/kami-ongaku-notation) / [`-sequencer`](https://github.com/kotoba-lang/kami-ongaku-sequencer) / [`-project`](https://github.com/kotoba-lang/kami-ongaku-project)（人が書く経路）、[`composer`](https://github.com/kotoba-lang/composer)（生成する経路） | 譜面 IR・MIDI/SMF・DAW セッション・生成契約 |
-| 職能 occupation | [`cloud-itonami-isco-2652`](https://github.com/cloud-itonami/cloud-itonami-isco-2652) | ISCO-08 2652 Musicians, Singers and Composers の blueprint |
-| 商売 business | **this repo** | 受注・権利・納品・成立判定 |
+| 技芸 craft | [`ongaku`](https://github.com/kotoba-lang/ongaku)（選曲・ライセンス gate と **権利/納品の判定**）、[`kami-ongaku-*`](https://github.com/kotoba-lang/kami-ongaku-project)（譜面・MIDI・DAW セッション）、[`composer`](https://github.com/kotoba-lang/composer)（生成契約） | 判定と IR |
+| 職能 occupation | [`cloud-itonami-isco-2652`](https://github.com/cloud-itonami/cloud-itonami-isco-2652) | ISCO-08 2652 の blueprint と reference actor。**問題を hard reject にするか人間承認に回すかを決める** |
+| 商売 business | **this repo** | 作品台帳（`resources/works.edn`）と受注の突き合わせ |
+
+**判定の中身はここに無い。** `ongaku.rights` / `ongaku.work` /
+`ongaku.commission` が「持っている権利と要求された譲渡」を受け取って判定し、
+**何を持っているかは知らない** —— それを持つのがこの repo。`ongaku.catalog`
+に対して `ongakuka/resources/catalog.edn` が立つのと同じ関係。
 
 ## ongakuka との境界
 
 `ongakuka` と分かれているのは語感の問題ではなく、**商売の力学が別**だから。
+職能（ISCO-08 2652）は**分けない** — ISCO は Musicians, Singers and Composers を
+1 つの職業として正しく束ねている。`isco-2651`（painters / sculptors /
+cartoonists）に対して `mangaka` だけが立っているのと同じ形。
 
 | | [`ongakuka`](https://github.com/cloud-itonami/ongakuka) | **sakkyokuka** |
 |---|---|---|
@@ -22,93 +30,53 @@ ADR-2607023000 が creative `-ka` ごとに定める 3 層のうち、3 番目:
 | 権利 | 第三者ライセンスの遵守 | 原盤権・著作権・出版権を自分が持つ |
 | 収益 | 使用許諾 / render 同梱 | 受注 + 二次利用 |
 | 納品物 | asset path + credit text | master / stems / MIDI / 譜面 / セッション |
-| craft | [`kotoba-lang/ongaku`](https://github.com/kotoba-lang/ongaku) | 上表のとおり |
+| 台帳 | `resources/catalog.edn` | `resources/works.edn` |
 
-職能（ISCO-08 2652）は**分けない** — ISCO は Musicians, Singers and Composers を
-1 つの職業として正しく束ねている。`isco-2651`（painters / sculptors /
-cartoonists）に対して `mangaka` だけが立っているのと同じ形で、-ka が ISCO より
-細かいのは既存の形。
-
-## 構造的に拒否すること
-
-`kotoba-lang/ongaku` が license policy の違反を構造的に拒否するのと同じことを、
-権利の譲渡側と納品の約束側で行う。
-
-**1. 持っていない権利は売れない。** ongakuka のカタログ資産について studio が
-持つのは非独占の使用許諾であって原盤権ではないので、それを素材にした受注で
-`:master` を独占譲渡することは成立しない。
+## 使う
 
 ```clojure
-(require '[sakkyokuka.rights :as rights])
+(require '[sakkyokuka.studio :as studio]
+         '[ongaku.rights :as rights])
 
-(rights/validate-grant [(rights/right {:kind :sync :exclusive? false})]
-                       (rights/right {:kind :master :exclusive? true}))
-;; => [{:problem/type :not-held
-;;      :problem/message "保有していない権利は譲渡できない: master(独占) worldwide" ...}]
+(def reg (studio/registry (read-string (slurp "resources/works.edn"))))
+
+(studio/evaluate reg
+  {:id "c-0001" :client "株式会社ほげ" :brief "CM 30 秒"
+   :work-id "w-0003"                         ; カタログ資産ベースの作品
+   :grants [(rights/right {:kind :master :exclusive? true})]
+   :deliverables [:master-audio] :fee 300000 :deadline "2026-09-30"})
+;; => {:ok? false
+;;     :problems [{:problem/type :not-held
+;;                 :problem/message "保有していない権利は譲渡できない: master(独占) worldwide"}]
+;;     :work {...}}
 ```
 
-非独占しか持っていない権利を独占で渡すこと、保有地域の外へ渡すこと、保有期間を
-超えて渡すこと、既に出した独占譲渡と地域・期間が重なることも同じく拒否する。
+台帳が答えるのは3つ:
 
-**2. 作れない物は約束できない。** 生成パイプラインの出力は音源と stems だけで、
-譜面も MIDI も DAW セッションも**そもそも存在しない**。純 AI 生成の作品に
-「譜面つき」を売ることは守れない約束なので受注時に落とす。
+- **`held-rights`** — その作品について実際に保有している権利。`w-0003` は
+  ongakuka 側のカタログ資産が素材なので非独占の同期使用許諾しか持たず、
+  原盤権の譲渡は構造的に落ちる。
+- **`granted`** — 既にどこかへ渡してある譲渡。独占の二重譲渡の検査に効く。
+- **`provenance`** — `:authored` なら譜面も MIDI も DAW セッションも出せるが、
+  `:generated` は音源と stems だけ。「譜面つき」を売る受注はここで落ちる。
 
-```clojure
-(require '[sakkyokuka.work :as work])
-
-(work/producible-kinds :authored)
-;; => #{:master-audio :stems :midi :score :session}
-(work/producible-kinds :generated)
-;; => #{:master-audio :stems}
-```
-
-**3. AI が関与した作品は、どのモデルが作ったかを記録せずに納品できない。**
-`:generated` / `:hybrid` の作品は `:work/model-id` と `:work/disclosure` を
-必ず持つ（`ai.gftd.ongakuka.track` の `modelId` と同じ要求）。
-
-## 受注
-
-```clojure
-(require '[sakkyokuka.commission :as commission])
-
-(commission/acceptable?
-  (commission/commission
-    {:id "c-0001" :client "株式会社ほげ" :brief "CM 30 秒"
-     :work my-work :fee 300000 :currency "JPY" :deadline "2026-09-30"
-     :grants [(rights/right {:kind :sync :territory #{"JP"} :exclusive? true
-                             :term {:term/from "2026-10-01" :term/until "2027-10-01"}})]
-     :deliverables [:master-audio :stems :midi :score :session]}))
-;; => true
-```
-
-`validate` は問題が無ければ `nil`、あれば問題の vector を返す。真が返ったら
-受注してはならない。
-
-## 生成経路との関係
-
-`ai.gftd.ongakuka.compose` の XRPC surface（`gftdcojp/apps-gftdcojp` の lexicon、
-`etzhayyim/com-etzhayyim-app-ongakuka` にも同型のものがある）と、
-`cloud-itonami/gftd-audio-actor`（persona リツ、network-isekai 向けの BGM/SFX
-生成 actor）は、どちらもそのまま残る。**この repo はそれらを置き換えるのでは
-なく、商売としての受注・権利・納品を1箇所に集約する。** lexicon の NSID は
-wire identity なので改名しない。
+台帳に無い作品は craft 層に渡す前に落とす（`:unknown-work`）——
+**台帳に無い作品の権利は定義上ひとつも保有していない**ので。
 
 ## Test
 
 ```bash
-nbb --classpath "src:test" run-tests.cljs   # ClojureScript on Node
-clojure -M:test                              # JVM
+nbb --classpath "src:test:../../kotoba-lang/ongaku/src" run-tests.cljs   # ClojureScript on Node
+clojure -M:test                                                          # JVM
 ```
 
-期間の包含判定は ISO-8601 文字列の `compare`、地域の包含判定は集合演算で
-書いてあるので、両ランタイムで実際に走らせて挙動が揃っていることを確かめる。
+nbb は deps.edn の git dep を解決しないので、ongaku のソースを classpath に
+直接足す（west checkout の sibling path）。
 
 ## Layout
 
 ```
-src/sakkyokuka/rights.cljc       権利の保有・譲渡と構造的拒否
-src/sakkyokuka/work.cljc         作品と provenance、納品可能な種別
-src/sakkyokuka/commission.cljc   受注と成立判定
-resources/craft-libraries.edn    技芸層の正本一覧（isco-2652 blueprint と一致させる）
+src/sakkyokuka/studio.cljc      台帳と受注の突き合わせ
+resources/works.edn             作品台帳（保有権利・既発譲渡・provenance）
+resources/craft-libraries.edn   技芸層の正本一覧（isco-2652 blueprint と一致させる）
 ```
