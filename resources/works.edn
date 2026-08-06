@@ -36,8 +36,10 @@
   {:id "w-0003"
    :title "夕暮れのBGM（カタログ資産ベース）"
    :provenance :authored
-   :note (str "ongakuka 側のカタログ資産（DOVA-SYNDROME 由来）を素材にしている。"
+   :note (str "ongakuka 側の *調達* 資産（DOVA-SYNDROME 由来、path A）を素材にしている。"
               "studio が持つのは非独占の同期使用許諾だけで、原盤権は持たない —— "
-              "この作品について :master を売ろうとすると ongaku.rights が拒否する")
+              "この作品について :master を売ろうとすると ongaku.rights が拒否する。"
+              "ongakuka の自前生成（path B）由来なら原盤を保有するので同じ譲渡は通る。"
+              "保有権利は repo 単位ではなく作品単位の事実であり、それを持つのがこの台帳")
    :held-rights [{:right/kind :sync :right/territory :worldwide :right/term :perpetual :right/exclusive? false}]
    :granted []}]}
