@@ -1,0 +1,18 @@
+{:paths ["src" "resources"]
+ ;; craft library への **コード依存は今のところ無い**。この repo が持つのは
+ ;; 受注・権利・納品という商売層のモデルで、譜面/MIDI/DAW セッションの実体を
+ ;; 触らないから。どの craft library がどの納品物の正本かは
+ ;; `sakkyokuka.work/deliverable-kinds` にデータとして持ち、
+ ;; `resources/craft-libraries.edn` が正本一覧を宣言する。
+ ;; 実体を読む機能（SMF から尺を測る等）を足す時にここへ git dep を入れる。
+ :deps {}
+ :aliases
+ {:test {:extra-paths ["test"]
+         :extra-deps {io.github.cognitect-labs/test-runner
+                      {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+         :main-opts ["-m" "cognitect.test-runner"]
+         :exec-fn cognitect.test-runner.api/test}
+  ;; clj-kondo as a Clojars lib (no Homebrew/system install needed).
+  :lint {:replace-deps {clj-kondo/clj-kondo {:mvn/version "2024.11.14"}}
+         :main-opts ["-m" "clj-kondo.main" "--lint" "src" "test"
+                     "--fail-level" "error"]}}}

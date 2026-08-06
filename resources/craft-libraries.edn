@@ -1,0 +1,41 @@
+;; 作曲の技芸層（craft）の正本一覧。
+;;
+;; ADR-2607023000 が定める 3 層（技芸 kotoba-lang / 職能 cloud-itonami-isco /
+;; 商売 この repo）のうち、技芸にあたるものをデータとして宣言する。
+;; `cloud-itonami-isco-2652` の blueprint.edn `:craft-libraries` は、
+;; この一覧と一致していなければならない。
+;;
+;; 2 系統あるのは方針ではなく事実 — 人が書く経路と生成する経路は
+;; 別々に landed していて、出せる納品物が違う（sakkyokuka.work/producible-kinds）。
+
+{:craft/authored
+ [{:repo "kotoba-lang/kami-ongaku-notation"
+   :produces #{:score}
+   :note "譜面 IR + MusicXML subset の round-trip。有理数 duration（float を使わない）"}
+  {:repo "kotoba-lang/kami-ongaku-sequencer"
+   :produces #{:midi}
+   :note "MIDI 相当の event/pattern/track IR + SMF Format 1 encode/decode"}
+  {:repo "kotoba-lang/kami-ongaku-project"
+   :produces #{:session}
+   :note "DAW セッション（track / bus graph / automation / tempo map）の L3 SSoT"}
+  {:repo "kotoba-lang/kami-ongaku-plugin-host"
+   :produces #{}
+   :note "プラグイン contract。納品物そのものは持たない"}
+  {:repo "kotoba-lang/kami-ongaku-sampler"
+   :produces #{}
+   :note "L2 サンプラー。納品物そのものは持たない"}]
+
+ :craft/generated
+ [{:repo "kotoba-lang/composer"
+   :produces #{:master-audio :stems}
+   :lexicon "ai.gftd.ongakuka.*"
+   :note (str "compose/track/stem/style/generation の契約 model。"
+              "パイプラインは lyricist→composer→vocalist‖arranger→mixer→critic。"
+              "この lib 自体は I/O を持たず、XRPC dispatch は呼び出し側の actor が担う")}]
+
+ ;; 選曲・ライセンス運用の craft。sakkyokuka ではなく ongakuka 側の技芸で、
+ ;; ここに書いてあるのは「こちらの担当ではない」ことを明示するため。
+ :craft/not-ours
+ [{:repo "kotoba-lang/ongaku"
+   :owner "cloud-itonami/ongakuka"
+   :note "既製 BGM の選定とライセンス policy gate。作曲はしない"}]}
