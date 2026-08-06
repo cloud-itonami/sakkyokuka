@@ -1,0 +1,43 @@
+;; この studio が持つ作品と、それぞれについて実際に保有している権利。
+;;
+;; **これが商売層の実体**。`kotoba-lang/ongaku` の `rights` / `work` /
+;; `commission` は「持っている権利と要求された譲渡」を受け取って判定する純関数で、
+;; **何を持っているかは知らない** —— それを知っているのがここ
+;; （`ongaku.catalog` に対して `ongakuka/resources/catalog.edn` が立つのと同じ形）。
+;;
+;; :held-rights / :granted は `ongaku.rights/right` の shape。
+;; :provenance は `ongaku.work/provenances` のキー。
+
+{:works
+ [{:id "w-0001"
+   :title "遠雷"
+   :provenance :authored
+   :note "kami-ongaku-project のセッションが実在する。譜面と MIDI も出せる"
+   :held-rights [{:right/kind :master      :right/territory :worldwide :right/term :perpetual :right/exclusive? true}
+                 {:right/kind :composition :right/territory :worldwide :right/term :perpetual :right/exclusive? true}
+                 {:right/kind :publishing  :right/territory :worldwide :right/term :perpetual :right/exclusive? true}
+                 {:right/kind :sync        :right/territory :worldwide :right/term :perpetual :right/exclusive? true}]
+   :granted [{:right/kind :sync
+              :right/territory #{"JP"}
+              :right/term {:term/from "2026-04-01" :term/until "2027-04-01"}
+              :right/exclusive? true
+              :granted-to "既存クライアント A"}]}
+
+  {:id "w-0002"
+   :title "night drive"
+   :provenance :generated
+   :model-id "diffrhythm-1.2-ja"
+   :disclosure "本作は ai.gftd.ongakuka.compose により生成されました。"
+   :note "音源と stems のみ。譜面・MIDI・セッションは存在しない"
+   :held-rights [{:right/kind :master      :right/territory :worldwide :right/term :perpetual :right/exclusive? true}
+                 {:right/kind :composition :right/territory :worldwide :right/term :perpetual :right/exclusive? true}]
+   :granted []}
+
+  {:id "w-0003"
+   :title "夕暮れのBGM（カタログ資産ベース）"
+   :provenance :authored
+   :note (str "ongakuka 側のカタログ資産（DOVA-SYNDROME 由来）を素材にしている。"
+              "studio が持つのは非独占の同期使用許諾だけで、原盤権は持たない —— "
+              "この作品について :master を売ろうとすると ongaku.rights が拒否する")
+   :held-rights [{:right/kind :sync :right/territory :worldwide :right/term :perpetual :right/exclusive? false}]
+   :granted []}]}

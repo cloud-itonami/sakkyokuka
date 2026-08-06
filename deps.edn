@@ -1,13 +1,18 @@
 {:paths ["src" "resources"]
- ;; craft library への **コード依存は今のところ無い**。この repo が持つのは
- ;; 受注・権利・納品という商売層のモデルで、譜面/MIDI/DAW セッションの実体を
- ;; 触らないから。どの craft library がどの納品物の正本かは
- ;; `sakkyokuka.work/deliverable-kinds` にデータとして持ち、
- ;; `resources/craft-libraries.edn` が正本一覧を宣言する。
- ;; 実体を読む機能（SMF から尺を測る等）を足す時にここへ git dep を入れる。
- :deps {}
+ ;; 受注の判定そのものは技芸層にある（ADR-2607023000）。ongaku.rights /
+ ;; ongaku.work / ongaku.commission が「持っている権利と要求された譲渡」を
+ ;; 受け取って判定し、**何を持っているかは知らない** —— それを持つのが
+ ;; この repo の resources/works.edn。
+ :deps {org.clojure/clojure {:mvn/version "1.12.0"}
+        io.github.kotoba-lang/ongaku
+        {:git/url "https://github.com/kotoba-lang/ongaku"
+         :git/sha "cb88622101057f49e8380ba6b7dab6723d02f964"}}
  :aliases
- {:test {:extra-paths ["test"]
+ {;; Workspace development — use the local lib checkout (no git fetch).
+  :dev {:override-deps
+        {io.github.kotoba-lang/ongaku {:local/root "../../kotoba-lang/ongaku"}}}
+
+  :test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
                       {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
          :main-opts ["-m" "cognitect.test-runner"]
