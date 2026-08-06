@@ -24,13 +24,22 @@ ADR-2607023000 が creative `-ka` ごとに定める 3 層のうち、3 番目:
 1 つの職業として正しく束ねている。`isco-2651`（painters / sculptors /
 cartoonists）に対して `mangaka` だけが立っているのと同じ形。
 
+**分かれ目は音源の出所ではなく商売の単位。** ongakuka も音を作る（AI
+generation coscientist / MusicGen）—— 違うのは、作った音を**自分のカタログに
+積む**のか、**依頼主に権利ごと渡す**のか。
+
 | | [`ongakuka`](https://github.com/cloud-itonami/ongakuka) | **sakkyokuka** |
 |---|---|---|
-| 原資 | 他人の既製音源（DOVA-SYNDROME / Incompetech 等） | 自分が作る |
-| 権利 | 第三者ライセンスの遵守 | 原盤権・著作権・出版権を自分が持つ |
+| 単位 | カタログの1曲を選んで使わせる | 依頼1件を受けて作り、権利を定めて渡す |
+| 音源 | 既製の調達 + 自前生成 | 受注ごとに作る |
+| 権利 | 資産ごとに違う（調達物は使用許諾のみ、自前生成は原盤を保有） | 作品ごとの保有権利を台帳に持ち、譲渡を検査する |
 | 収益 | 使用許諾 / render 同梱 | 受注 + 二次利用 |
 | 納品物 | asset path + credit text | master / stems / MIDI / 譜面 / セッション |
 | 台帳 | `resources/catalog.edn` | `resources/works.edn` |
+
+**保有権利は repo 単位ではなく作品単位の事実**なので、`works.edn` が作品ごとに
+持つ。`w-0003` のように ongakuka 側の調達資産を素材にした作品は原盤権を持たず、
+自前で書いた `w-0001` は持つ —— 同じ repo の中で両方が並ぶ。
 
 ## 使う
 
