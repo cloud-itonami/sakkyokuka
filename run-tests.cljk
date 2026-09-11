@@ -10,7 +10,7 @@
 ;; nbb は deps.edn の git dep を解決しないので、ongaku のソースを classpath に
 ;; 直接足す（west checkout の sibling path）:
 ;;
-;;   nbb --classpath "src:test:../../kotoba-lang/ongaku/src" run-tests.cljs
+;;   nbb --classpath "src:test:../../kotoba-lang/ongaku/src" run-tests.cljk
 
 (ns run-tests
   (:require [cljs.test :as t]

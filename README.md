@@ -75,7 +75,7 @@ generation coscientist / MusicGen）—— 違うのは、作った音を**自�
 ## Test
 
 ```bash
-nbb --classpath "src:test:../../kotoba-lang/ongaku/src" run-tests.cljs   # ClojureScript on Node
+nbb --classpath "src:test:../../kotoba-lang/ongaku/src" run-tests.cljk   # ClojureScript on Node
 clojure -M:test                                                          # JVM
 ```
 
@@ -85,7 +85,7 @@ nbb は deps.edn の git dep を解決しないので、ongaku のソースを c
 ## Layout
 
 ```
-src/sakkyokuka/studio.cljc      台帳と受注の突き合わせ
+src/sakkyokuka/studio.cljk      台帳と受注の突き合わせ
 resources/works.edn             作品台帳（保有権利・既発譲渡・provenance）
 resources/craft-libraries.edn   技芸層の正本一覧（isco-2652 blueprint と一致させる）
 ```
