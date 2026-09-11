@@ -75,8 +75,8 @@ generation coscientist / MusicGen）—— 違うのは、作った音を**自�
 ## Test
 
 ```bash
-nbb --classpath "src:test:../../kotoba-lang/ongaku/src" run-tests.cljk   # ClojureScript on Node
-clojure -M:test                                                          # JVM
+kbb --backend sci --classpath "src:test:../../kotoba-lang/ongaku/src" run-tests.cljk   # ClojureScript on Node
+kbb -M:test                                                          # JVM
 ```
 
 nbb は deps.edn の git dep を解決しないので、ongaku のソースを classpath に
