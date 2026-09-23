@@ -3,7 +3,11 @@
  ;; ongaku.work / ongaku.commission が「持っている権利と要求された譲渡」を
  ;; 受け取って判定し、**何を持っているかは知らない** —— それを持つのが
  ;; この repo の resources/works.edn。
- :deps {org.clojure/clojure {:mvn/version "1.12.0"}
+ :deps {
+        ;; kotoba.test (clojure.test-compatible surface), not clojure.test --
+        ;; scripts/migrate-clojure-test-to-kotoba-test.cljk. Explicit floor.
+        io.github.kotoba-lang/test {:git/url "https://github.com/kotoba-lang/test.git"
+                                    :git/sha "2ab4885f99fd25552d380d0f6b0b54c5a72eb7ae"}org.clojure/clojure {:mvn/version "1.12.0"}
         io.github.kotoba-lang/ongaku
         {:git/url "https://github.com/kotoba-lang/ongaku"
          :git/sha "cb88622101057f49e8380ba6b7dab6723d02f964"}}
