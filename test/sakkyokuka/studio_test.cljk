@@ -1,5 +1,5 @@
 (ns sakkyokuka.studio-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [ongaku.rights :as rights]
             [sakkyokuka.studio :as studio]))
 
